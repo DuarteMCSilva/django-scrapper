@@ -22,14 +22,20 @@ def hello(request):
     return HttpResponse('Hello!')
 
 def getData(request):
+    request_ticker: str = request.GET.get('ticker')
+    period: str = request.GET.get('p')
 
-    request_ticker = request.GET.get('ticker')
+    possibleVals = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
 
     if request_ticker == None: 
         return HttpResponse('No ticker provided!')
+    
+    if period not in possibleVals:
+        period = "5y"
 
     ticker = yfinance.Ticker(request_ticker)
-    history_df = ticker.history(period="1mo")
+    history_df = ticker.history(period=period)
+
 
     history_json = history_df.to_json()
 
